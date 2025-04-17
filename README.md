@@ -1,69 +1,89 @@
-<!--
-title: 'AWS Simple HTTP Endpoint example in NodeJS'
-description: 'This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.'
-layout: Doc
-framework: v4
-platform: AWS
-language: nodeJS
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, Inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Watchlist API 🚀
 
-# Serverless Framework Node HTTP API on AWS
+A serverless API for managing stocks in a watchlist, built with AWS Lambda, API Gateway, and PostgreSQL on Supabase.
 
-This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.
+### 🌟 Key Features
 
-This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/) which includes Typescript, Mongo, DynamoDB and other examples.
+Full CRUD for stocks in a watchlist
+Serverless architecture (no servers to manage)
+PostgreSQL database hosted on Supabase
+Automated CI/CD with GitHub Actions
+Infrastructure as code using Serverless Framework
 
-## Usage
+### 🛠 Technologies Used
 
-### Deployment
+**AWS**:
+Lambda (Node.js 18.x)
+API Gateway
+**Database**: PostgreSQL (Supabase)
+**Framework**: Serverless Framework v4
+**CI/CD**: GitHub Actions
+**Language**: JavaScript (Node.js)
 
-In order to deploy the example, you need to run the following command:
+### 📋 Available Endpoints
 
-```
-serverless deploy
-```
+|Method   |  Endpoint |  Description | Example Body |
+| ------------ | ------------ | ------------ | ------------ |
+|  POST | /watchlist  |  Add a stock to the watchlist | {"symbol":"AAPL","companyName":"Apple Inc.","notes":"Tech stock"}  |
+| GET  |  /watchlist | Get all registered stocks  |   |
+| DELETE  |  /watchlist/{symbol} | Remove a specific stock  |   |
 
-After running deploy, you should see output similar to:
+### 🚀 Deployment
 
-```
-Deploying "serverless-http-api" to stage "dev" (us-east-1)
+##### Prerequisites
 
-✔ Service deployed to stack serverless-http-api-dev (91s)
+AWS account with IAM credentials
+PostgreSQL instance (Supabase or local)
+Node.js 18.x or higher
+Serverless Framework installed globally
 
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: serverless-http-api-dev-hello (1.6 kB)
-```
+#### Manual Deployment Steps
 
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [HTTP API (API Gateway V2) event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api).
+##### Set environment variables:
+    export DB_CONNECTION_STRING="databaseString"
+    export AWS_ACCESS_KEY_ID="your_access_key"
+    export AWS_SECRET_ACCESS_KEY="your_secret_key"
+##### Install dependencies:
+    npm install
+##### Deploy:
+    serverless deploy
+	
+### Automatic Deployment (CI/CD)
 
-### Invocation
+The repository includes GitHub Actions that automatically deploy when pushing to main.
 
-After successful deployment, you can call the created application via HTTP:
+### 🏗 Project Structure
+    
+    watchlist-api/
+    ├── handler.js           # Lambda function logic
+    ├── serverless.yml       # Infrastructure configuration
+    ├── package.json         # Node.js dependencies
+    └── .github/workflows/
+        └── deploy.yml       # CI/CD pipeline
+    
+### 💾 Database Schema
 
-```
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
-```
+    CREATE TABLE watchlist (
+      id SERIAL PRIMARY KEY,
+      user_id INT NOT NULL,
+      symbol VARCHAR(10) NOT NULL,
+      company_name TEXT NOT NULL,
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
 
-Which should result in response similar to:
+### 🔍 Testing
 
-```json
-{ "message": "Go Serverless v4! Your function executed successfully!" }
-```
+You can test the endpoints with cURL:
 
-### Local development
 
-The easiest way to develop and test your function is to use the `dev` command:
+#### Add stock
+    curl -X POST https://your-api.execute-api.region.amazonaws.com/dev/watchlist \
+      -H "Content-Type: application/json" \
+      -d '{"symbol":"AAPL","companyName":"Apple Inc.","notes":"Tech stock"}'
 
-```
-serverless dev
-```
+#### List stocks
+    curl https://your-api.execute-api.region.amazonaws.com/dev/watchlist
 
-This will start a local emulator of AWS Lambda and tunnel your requests to and from AWS Lambda, allowing you to interact with your function as if it were running in the cloud.
-
-Now you can invoke the function as before, but this time the function will be executed locally. Now you can develop your function locally, invoke it, and see the results immediately without having to re-deploy.
-
-When you are done developing, don't forget to run `serverless deploy` to deploy the function to the cloud.
+#### Delete stock
+    curl -X DELETE https://your-api.execute-api.region.amazonaws.com/dev/watchlist/AAPL
