@@ -1,0 +1,31 @@
+service: watchlist-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x 
+  region: us-east-1
+  environment:
+    DB_CONNECTION_STRING: ${env:DB_CONNECTION_STRING}
+
+functions:
+  addToWatchlist:
+    handler: handler.addToWatchlist
+    events:
+      - http:
+          path: watchlist
+          method: post
+          cors: true
+  getWatchlist:
+    handler: handler.getWatchlist
+    events:
+      - http:
+          path: watchlist
+          method: get
+          cors: true
+  removeFromWatchlist:
+    handler: handler.removeFromWatchlist
+    events:
+      - http:
+          path: watchlist/{symbol}
+          method: delete
+          cors: true
